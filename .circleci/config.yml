@@ -3,8 +3,11 @@ version: 2.1
 jobs:
   run_docker_commands:
     docker:
-      - image: cimg/python:3.9  # You can use any base image for your CI environment
+      - image: cimg/python:3.9  # Base image with Docker support
     steps:
+      - setup_remote_docker:
+          version: 20.10.7  # Specify the version of Docker to use
+          docker_layer_caching: true  # Enable Docker layer caching for faster builds
       - checkout  # Checkout the code (optional, if you have any code to check out)
       - run:
           name: Setup Docker Buildx and QEMU for ARM emulation
