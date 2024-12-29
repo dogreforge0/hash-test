@@ -1,8 +1,0 @@
-steps:
-  - label: ":docker: Run Docker container and execute commands"
-    command: |
-      # Pull the Docker image (balenalib/generic-aarch64)
-      docker pull balenalib/generic-aarch64
-
-      # Run the Docker container and execute the commands (uname -m and lscpu)
-      docker run --rm balenalib/generic-aarch64 bash -c "uname -m && lscpu"
