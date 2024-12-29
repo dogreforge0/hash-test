@@ -6,8 +6,6 @@ jobs:
       - image: cimg/python:3.9
     resource_class: large  # Use a larger resource class for more resources
     steps:
-      - setup_remote_docker:
-          docker_layer_caching: true
       - checkout
       - run:
           name: Setup Docker Buildx and QEMU for ARM emulation
