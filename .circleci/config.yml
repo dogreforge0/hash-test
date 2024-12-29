@@ -9,7 +9,7 @@ jobs:
           docker_layer_caching: true  # Enable Docker layer caching for faster builds
       - checkout  # Checkout the code (optional, if you have any code to check out)
       - run:
-          name: Setup Docker Buildx and QEMU for ARM emulation
+          name: Setup Docker Buildx and QEMU for ARM emulation 
           command: |
             # Install QEMU for ARM emulation
             sudo apt-get update
