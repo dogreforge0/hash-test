@@ -3,10 +3,12 @@ version: 2.1
 jobs:
   run_docker_commands:
     docker:
-      - image: cimg/python:3.9
-    resource_class: large  # Use a larger resource class for more resources
+      - image: cimg/python:3.9  # You can use any base image for your CI environment  # Base image with Docker support
     steps:
-      - checkout
+      - setup_remote_docker:
+          version: 20.10.7  # Specify the version of Docker to use
+          docker_layer_caching: true  # Enable Docker layer caching for faster builds
+      - checkout  # Checkout the code (optional, if you have any code to check out)
       - run:
           name: Setup Docker Buildx and QEMU for ARM emulation
           command: |
@@ -14,18 +16,14 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y qemu-user-static
             docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-
             # Enable Docker Buildx
             docker buildx create --use
-
             # Pull the ARM64 image (balenalib/generic-aarch64)
             docker pull balenalib/generic-aarch64
-
             # Run the ARM64 image with uname and lscpu commands
             docker run --rm balenalib/generic-aarch64 bash -c "uname -m && lscpu"
-
 workflows:
   version: 2
   build:
-    jobs: 
+    jobs:
       - run_docker_commands
